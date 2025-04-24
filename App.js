@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, FlatList, Switch, TouchableOpacity, StyleSheet, StatusBar, SafeAreaView } from 'react-native';
 import axios from 'axios';
 
-// Replace with your FastAPI backend IP
 const BASE_URL = 'https://fastapi-todo-api-hopa.onrender.com';
 
 export default function App() {
@@ -74,55 +73,54 @@ export default function App() {
     return true;
   });
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
-
   const styles = createStyles(darkMode);
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle={darkMode ? 'light-content' : 'dark-content'} />
 
-      <Text style={styles.title}>To-Do List</Text>
+      <Text style={styles.title}>📝 To-Do List</Text>
 
       <View style={styles.switchContainer}>
-        <Text style={styles.text}>Dark Mode</Text>
+        <Text style={styles.label}>Dark Mode</Text>
         <Switch value={darkMode} onValueChange={toggleDarkMode} />
       </View>
 
       <View style={styles.filterContainer}>
         {['all', 'completed', 'pending'].map(option => (
-          <TouchableOpacity key={option} onPress={() => setFilter(option)}>
-            <Text style={[styles.filterButton, filter === option && styles.activeFilter]}>
-              {option.toUpperCase()}
-            </Text>
+          <TouchableOpacity key={option} onPress={() => setFilter(option)} style={[
+            styles.filterButton,
+            filter === option && styles.filterButtonActive
+          ]}>
+            <Text style={styles.filterText}>{option.toUpperCase()}</Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Enter a task"
-        placeholderTextColor={darkMode ? "#aaa" : "#555"}
-        value={title}
-        onChangeText={setTitle}
-      />
-      <Button title={editingTask ? "Update Task" : "Add Task"} onPress={handleAdd} />
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter a task..."
+          placeholderTextColor={darkMode ? "#aaa" : "#555"}
+          value={title}
+          onChangeText={setTitle}
+        />
+        <Button title={editingTask ? "Update" : "Add"} onPress={handleAdd} />
+      </View>
 
       <FlatList
         data={filteredTasks}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.taskItem}>
+          <View style={styles.taskCard}>
             <TouchableOpacity onPress={() => handleToggleComplete(item)}>
               <Text style={[styles.taskText, item.completed && styles.completed]}>
-                {item.completed ? '☑️ ' : '⬜ '} {item.title}
+                {item.completed ? '☑️' : '⬜'} {item.title}
               </Text>
             </TouchableOpacity>
             <View style={styles.actions}>
               <Button title="Edit" onPress={() => handleEdit(item)} />
-              <Button title="Delete" color="red" onPress={() => handleDelete(item.id)} />
+              <Button title="Delete" color="#ff4d4d" onPress={() => handleDelete(item.id)} />
             </View>
           </View>
         )}
@@ -131,69 +129,85 @@ export default function App() {
   );
 }
 
-const createStyles = (darkMode) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      paddingTop: 30,
-      paddingHorizontal: 20,
-      backgroundColor: darkMode ? '#222' : '#fff',
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      marginBottom: 10,
-      color: darkMode ? '#fff' : '#000',
-      textAlign: 'center',
-    },
-    switchContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 20,
-    },
-    text: {
-      color: darkMode ? '#eee' : '#333',
-    },
-    input: {
-      borderWidth: 1,
-      borderColor: darkMode ? '#555' : '#ccc',
-      padding: 10,
-      marginBottom: 10,
-      borderRadius: 5,
-      color: darkMode ? '#fff' : '#000',
-    },
-    taskItem: {
-      backgroundColor: darkMode ? '#333' : '#f9f9f9',
-      padding: 15,
-      marginVertical: 5,
-      borderRadius: 5,
-    },
-    taskText: {
-      fontSize: 16,
-      color: darkMode ? '#fff' : '#000',
-    },
-    completed: {
-      textDecorationLine: 'line-through',
-      color: darkMode ? '#888' : '#999',
-    },
-    actions: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginTop: 10,
-    },
-    filterContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      marginBottom: 15,
-    },
-    filterButton: {
-      fontWeight: 'bold',
-      padding: 5,
-      color: darkMode ? '#aaa' : '#333',
-    },
-    activeFilter: {
-      color: darkMode ? '#fff' : '#000',
-      textDecorationLine: 'underline',
-    },
-  });
+const createStyles = (dark) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: dark ? '#121212' : '#f0f0f0',
+    paddingHorizontal: 20,
+    paddingTop: 30,
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+    color: dark ? '#fff' : '#111',
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  label: {
+    fontSize: 16,
+    color: dark ? '#eee' : '#333',
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  filterButton: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 8,
+    backgroundColor: dark ? '#333' : '#ddd',
+    marginHorizontal: 5,
+    borderRadius: 6,
+  },
+  filterButtonActive: {
+    backgroundColor: '#4c9aff',
+  },
+  filterText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  input: {
+    flex: 1,
+    backgroundColor: dark ? '#2c2c2c' : '#fff',
+    padding: 10,
+    borderRadius: 6,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginRight: 10,
+    color: dark ? '#fff' : '#000',
+  },
+  taskCard: {
+    backgroundColor: dark ? '#1e1e1e' : '#fff',
+    padding: 15,
+    marginBottom: 10,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  taskText: {
+    fontSize: 16,
+    color: dark ? '#fff' : '#000',
+  },
+  completed: {
+    textDecorationLine: 'line-through',
+    color: dark ? '#888' : '#888',
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+});
