@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button, FlatList, Switch, TouchableOpacity, Styl
 import axios from 'axios';
 
 // Replace with your FastAPI backend IP
-const BASE_URL = 'http://192.168.1.21:8000';
+const BASE_URL = 'https://fastapi-todo-api-hopa.onrender.com';
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
